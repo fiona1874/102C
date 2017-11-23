@@ -1,0 +1,115 @@
+---
+title: "102CHW3"
+author: "JING LI"
+date: "5/11/2017"
+output: pdf_document
+---
+
+```{r}
+f_tilde = function(x) exp(-x^2/2)
+g_tilde = function(x) exp(-x)
+h = function(x) x
+E = function(n){
+  x = rexp(n,rate = 1)
+  w_tilde = f_tilde(x)/g_tilde(x)
+  weight = w_tilde/sum(w_tilde)
+  I_hat = sum(h(x)*weight)
+  return(I_hat)
+  
+}
+E(10000)
+Z = function(n) {
+  x = rexp(n, rate = 1)
+  w_tilde = f_tilde(x)/g_tilde(x)
+  return(mean(w_tilde))
+}
+Z(10000)
+sqrt(pi/2)
+```
+
+```{r}
+# 3
+#(1) method 1 :use truncated N(C,1) as g
+f = function(x) dnorm(x)
+g = function(x,C) dnorm(x, mean=C)
+h = function(x,C) (x>C)
+
+E = function(n,C){
+  x=rnorm(n,C)
+  w=f(x)/g(x,C)
+  I_hat = mean(h(x,C)*w)
+  return(I_hat)
+}
+E(1e5, 10)
+# pnorm gives cdf F(x<C)
+1-pnorm(10)
+
+# (1)method 2: use truncated exp(1) as g
+# g=exp(x-C)
+f= function(x) dnorm(x)
+g= function(x,C) dexp(x-C)
+E=function(n,C){
+  x=rexp(n) + C
+  w=f(x)/g(x,C)
+  I_hat = mean(w)
+  return(I_hat)
+}
+E(1e5,2)
+1-pnorm(2)
+
+# (2)
+f=function(x1,x2,x3,mu) dnorm(x1,mu,1)*dnorm(x2,mu,1)*dnorm(x3,mu,1)
+g=function(x1,x2,x3,alpha) dnorm(x1,alpha,1)*dnorm(x2,alpha,1)*dnorm(x3,alpha,1)
+h=function(M,c) (M>c)
+E = function(N,mu,alpha,c){
+  X=cbind(x1=rnorm(N,alpha,1), x2=rnorm(N,alpha,1),x3=rnorm(N,alpha,1))
+  M=apply(X,1, FUN=function(x) max(x[1],x[1]+x[2],x[1]+x[2]+x[3]))
+  w=apply(X,1,FUN=function(x) {f(x[1],x[2],x[3],mu)/g(x[1],x[2],x[3],alpha)})
+  I_hat=mean(w*h(M,c))
+ return(I_hat)
+}
+E(1e5,-1,0.5,1)
+```
+
+```{r}
+SAW <- function(N,n){
+  weights <- rep(0,N)
+  for (iter in 1:N){
+    map <- matrix(FALSE, nrow = 2*n+1, ncol = 2*n+1)
+    x <- n + 1
+    y <- n + 1
+    w <- 1  
+    for (i in 1:n){
+      map[x,y] <- TRUE
+      moves <- c('up', 'down', 'right', 'left')
+      if (map[x-1, y] == TRUE) moves <- moves[-which(moves=='up')]
+      if (map[x, y+1] == TRUE) moves <- moves[-which(moves=='right')]
+      if (map[x+1, y] == TRUE) moves <- moves[-which(moves=='down')]
+      if (map[x, y-1] == TRUE) moves <- moves[-which(moves=='left')]
+      nmoves <- length(moves)
+      if (nmoves == 0){
+        w <- w * moves
+        break
+      }
+      w <- w*nmoves
+      direction <- sample(moves,1)
+      if (direction == 'up'){
+        x <- x-1
+      }else if (direction == 'right'){
+        y <- y+1
+      }else if (direction == 'down'){
+        x <- x+1
+      }else{
+        y <- y-1
+      }
+    }
+    weights[iter] <- w
+  }
+  size_A <- mean(weights)
+  size_A
+}
+SAW(1000,2)
+SAW(1000,3)
+SAW(1000,5)
+```
+

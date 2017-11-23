@@ -1,0 +1,99 @@
+---
+title: "102HW1"
+author: "Jing Li"
+date: "2017/4/19"
+output: pdf_document
+---
+Problem1.
+
+```{r}
+
+uniffun <- function(X1, n){
+  X <- c()
+  X[1] <- X1
+  for(i in 1:(n-1)) {
+    X[i+1] <- (7^5*X[i]) %% (2^31-1)
+  }
+  Ut <- X/(2^31-1)
+}
+
+random.numbers1 <- uniffun(10, 10000)
+hist(random.numbers1, prob = TRUE)
+```
+```{r}
+X2t <- random.numbers1[seq(2, 500*2, by = 2)]
+X2tPlus1 <- random.numbers1[seq(3, 500*2+1, by = 2)]
+plot(X2t, X2tPlus1)
+```
+
+Problem3.
+```{r}
+expfun <- function(lambda, X1, n){
+  random.numbers1 <- uniffun(X1, n)
+  x <- -log(random.numbers1)/lambda
+}
+
+rn2 <- expfun(8, 88, 10000)
+rn3 <- expfun(10, 100, 10000)
+
+hist(rn2, breaks = 40, prob = TRUE)
+hist(rn3, breaks = 40, prob = TRUE)
+```
+
+Problem5.
+
+```{r}
+acc_rej <- function(x){
+  exp(-(x-1)^2/2)
+}
+rn4 <- expfun(9, 99, 10000)
+rn4_acc <- acc_rej(rn4)
+rn5 <- uniffun(77, 10000)
+rn6 <- c()
+iter <- 1
+for(i in 1:10000){
+  if(rn5[i] <= rn4_acc[i]){
+    rn6[iter] <- rn4[i]
+    iter <- iter+1
+  }
+}
+
+hist(rn6, prob = TRUE)
+```
+
+```{r}
+for(i in 1:10000){
+  
+if(rn5[i] < 0.5){
+  rn6[i] <- rn6[i]*(-1)
+}
+}
+hist(rn6)
+```
+```{r}
+iter/10000
+1/sqrt(2*exp(1/pi))
+```
+
+Problem6.
+
+```{r}
+# theta = 2*pi*unif
+# radius R (pdf) = exp(-r^2 / 2)*r
+# inverse sdf is sqrt(-2 log(t))
+
+U1 = uniffun(5000,66)
+U2 = uniffun(5000,55)
+theta = 2*pi*U1
+
+my_invforR = function(x){sqrt(-2*log(x))}
+R = my_invforR(U2)
+
+x= R*cos(theta)
+y= R*sin(theta)
+
+z=c(x,y)
+hist(z,prob=T,xlim=c(-3,3),breaks=30)
+
+```
+

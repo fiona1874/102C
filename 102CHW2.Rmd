@@ -1,0 +1,93 @@
+---
+title: "102CHW2"
+author: "JING LI"
+date: "5/1/2017"
+output: pdf_document
+---
+
+```{r}
+m <- 1000
+counter <- 0 
+for(i in 1:m){
+  n <- 1000
+  u1 <- runif(n)
+  u2 <- runif(n)
+  theta <- 2 * pi * u1
+  R <- sqrt(2 * -log(u2))
+  X <- R * cos(theta)
+  Y <- R * sin(theta)
+  Z <- c(X,Y)
+  Ihat <- mean(Z^2)
+  Varhat <- var(Z)
+  SD <- sqrt(Varhat/n)
+  Lower <- Ihat - 1.96*SD
+  Upper <- Ihat + 1.96*SD
+  if (Lower <= 1 & Upper >= 1){
+    counter <- counter + 1
+  }
+}
+counter
+counter/m
+```
+The result is approaximately equal to 95%.
+
+
+```{r}
+
+n <- 10000 
+m <- 1000 
+freq1 <- rep(0,m)
+pihat1 <- rep(0,m)
+for(i in 1:m){
+  x <- runif(n)
+  y <- runif(n)
+  freq1[i] <- mean(x^2 + y^2 <= 1)
+  pihat1[i] <- 4 * freq1[i]
+  
+}
+mean(pihat1)
+var(pihat1)
+```
+
+```{r}
+pihat2 <- rep(0,m)
+for(i in 1:m){
+  x <- runif(n)
+  pihat2[i] <- 4* mean(sqrt(1-x^2))
+  
+}
+
+mean(pihat2)
+var(pihat2)
+```
+```{r}
+pihat3 <- rep(0,m)
+
+for(i in 1:m){
+  x <- runif(n)
+  pihat3[i] <- 4*mean((sqrt(1-x^2) + sqrt(1-(1-x)^2))/2)
+}
+mean(pihat3)
+var(pihat3)
+```
+```{r}
+pihat4 <- rep(NA, m)
+for (i in 1:m){
+  x <-runif(n)
+  pihat4[i] <- 4 * (mean(sqrt(1-x^2) - (1-x) + 0.5))
+}
+mean(pihat4)
+var(pihat4)
+```
+
+
+```{r}
+pihat5 <- rep(0,m)
+for (i in 1:m){
+  x  <- 0.1*runif(n/10) + seq(0, 0.9, by = 0.1)
+  pihat5[i] <- 4 * mean(sqrt(1-x^2))
+}
+mean(pihat5)
+var(pihat5)
+```
+
